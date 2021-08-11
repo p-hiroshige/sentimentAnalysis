@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="sentimentAnalysisPkg",
-    version="0.0.2",
+    version="0.0.4",
     author="Example Author",
     author_email="author@example.com",
     description="package to perform sentiment analysis on financial social media posts",

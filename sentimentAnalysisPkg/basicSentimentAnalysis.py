@@ -14,7 +14,7 @@ class sentimentAnalytics():
         #TODO make these downloads definitions parameters?
         
     
-    def main(self, df,tickers):
+    def main(self, df, tickers):
         from bs4 import BeautifulSoup
         import nltk
         from nltk.sentiment.vader import SentimentIntensityAnalyzer
@@ -212,14 +212,15 @@ class sentimentAnalytics():
 
                 if a_bool == True:
                     print(df.iloc[i,0], df.iloc[i,1])
+                    print(df.iloc[i,2], '\n')
 
                 i += 1
 
         def search_repeat(df): # provides opportunity to do multiple searches on key words. returns only the appropriate yes or no response.
             key_word = input('What is the key word you want to search? [press "enter" for none]')
-            if key_word:
+            if key_word: #True if anything is entered in the key_word inputstatement; False if only enter is pressed
                 kw(df, key_word)
-                answer = input('Do you want to do another search?')
+                answer = input('Do you want to do another search? [Enter either a "y" or "n."]')
             else:
                 answer = 'no' #if there is not key word that is entered it sets answer to no. - assumes if there is no key word there is no desire to do another search.
             while answer not in yes_answer and answer not in no_answer: # Restricts answer to be either in the yes or no list by continuous looping on it unit input matches either list
@@ -235,7 +236,8 @@ class sentimentAnalytics():
             return correction
 
         def stopwords_yes_no(): # provides opportunity to removes stopwords from the titles. returns only the appropriate yes or no response.
-            yes_no = input('Do you want to remove the stopwords from the titles? [press "enter" for no]')
+            #yes_no = input('Do you want to remove the stopwords from the titles? [press "enter" for no]')
+            yes_no = 'yes'
             if yes_no in yes_answer:
                 answer = 'yes'
             else:
@@ -277,6 +279,9 @@ class sentimentAnalytics():
         mean_df.plot(kind = 'bar')
 
         print(tickers)
+        
+        fig = plt.gcf()
+        fig.set_size_inches(20,10) #adjusts bar chart's size
         plt.show()
         print('Here is a bar chart of the average sentiment values by date!')
 
@@ -287,41 +292,41 @@ class sentimentAnalytics():
 
         #### PROVIDES DATE RANGES AND SIMPLE STATISTICS ON THE SENTIMENT OF THE TITLES
 
-        # provides date ranges for the last 100 articles; added by si
-        print('Date Range of the 100 most recent articles: ') #added by si
-        print('Most Recent Article Date: ', df.iloc[0,1]) #added by si
-        #print('Oldest Article Date: ', df.iloc[99,1], '\n') #added by si
+        # provides date ranges for the last 100 articles; 
+        print('Date Range of the 100 most recent articles: ') 
+        print('Most Recent Article Date: ', df.iloc[0,1]) 
+        #print('Oldest Article Date: ', df.iloc[99,1], '\n') 
         oldest = len(df) - 1
-        print('Oldest Article Date: ', df.iloc[oldest,1], '\n') #added by si
+        print('Oldest Article Date: ', df.iloc[oldest,1], '\n') 
 
 
-        # provides basic sentiment statistics; added by si
+        # provides basic sentiment statistics
         i = 0 # set starting index number to 0
         pos_counter = 0 # sets starting positive counter to 0
         neu_counter = 0
         neg_counter = 0
 
-        dfpos = pd.DataFrame(columns = ['date', 'title']) #initializes df where positive titles are stored
-        dfneu = pd.DataFrame(columns = ['date', 'title'])
-        dfneg = pd.DataFrame(columns = ['date', 'title'])
+        dfpos = pd.DataFrame(columns = ['date', 'title', 'link']) #initializes df where positive titles are stored
+        dfneu = pd.DataFrame(columns = ['date', 'title', 'link'])
+        dfneg = pd.DataFrame(columns = ['date', 'title', 'link'])
 
         # for the sentiment histogram
         sent_hist = []
 
         # Separate the sentiment values into pos, neu, and neg
         while i < len(df):
-            sent_hist.append(df.iloc[i,4]) # added for the sentiment histogram
-            if df.iloc[i,4] > 0.0:
+            sent_hist.append(df.iloc[i,5]) # added for the sentiment histogram
+            if df.iloc[i,5] > 0.0:
                 pos_counter += 1
-                dfpos = dfpos.append(dict(zip(dfpos.columns,[df.iloc[i,1], df.iloc[i,3]])), ignore_index=True) #fill dfpos df
+                dfpos = dfpos.append(dict(zip(dfpos.columns,[df.iloc[i,1], df.iloc[i,3], df.iloc[i,4]])), ignore_index=True) #fill dfpos df with date/time, title & link
 
-            elif df.iloc[i,4] == 0.0:
+            elif df.iloc[i,5] == 0.0:
                     neu_counter += 1
-                    dfneu = dfneu.append(dict(zip(dfneu.columns,[df.iloc[i,1], df.iloc[i,3]])), ignore_index=True)
+                    dfneu = dfneu.append(dict(zip(dfneu.columns,[df.iloc[i,1], df.iloc[i,3], df.iloc[i,4]])), ignore_index=True)
 
-            elif df.iloc[i,4] < 0.0:
+            elif df.iloc[i,5] < 0.0:
                     neg_counter += 1
-                    dfneg = dfneg.append(dict(zip(dfneg.columns,[df.iloc[i,1], df.iloc[i,3]])), ignore_index=True)
+                    dfneg = dfneg.append(dict(zip(dfneg.columns,[df.iloc[i,1], df.iloc[i,3], df.iloc[i,4]])), ignore_index=True)
 
             i += 1
 
@@ -336,6 +341,9 @@ class sentimentAnalytics():
         plt.xlabel('Sentiment Value')
         plt.ylabel('Number of articles')
         plt.grid()
+        
+        fig = plt.gcf()
+        fig.set_size_inches(16,5) #adjusts the histogram's size
         plt.show()
 
         print('Here is a histogram of the sentiment values!')
@@ -361,9 +369,13 @@ class sentimentAnalytics():
 
         print(tickers)
         print('The percent of articles with Positive, Neutral and Negative sentiment.')
+        
+        fig = plt.gcf()
+        fig.set_size_inches(10,10) #adjusts the pie chart's size
         plt.show()
 
-        time.sleep(1)
+        time.sleep(5)
+        
         pause = input('Press enter to move on. Coming up is the postive sentiment word cloud!\n') #pauses after the pie chart
 
         #### produces the word clouds; added by si
@@ -406,7 +418,7 @@ class sentimentAnalytics():
         while repeat in yes_answer:
             repeat = search_repeat(dfneu)
 
-        print('Moving on to the negative sentiment word clould ...')
+        print('Moving on to the negative sentiment word cloud ...')
 
         time.sleep(1)
 
@@ -425,5 +437,5 @@ class sentimentAnalytics():
         repeat = 'yes'
         while repeat in yes_answer:
             repeat = search_repeat(dfneg)
-
+    
         print('All done ...')
