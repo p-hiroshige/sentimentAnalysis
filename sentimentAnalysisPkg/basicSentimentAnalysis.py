@@ -142,8 +142,8 @@ class sentimentAnalytics():
             stopWords = list(filter(lambda w: w not in WordsToBeRem, stopWords_list)) #stopWords_list has been sorted in #470
 
             #converts the stopword list to a df and then outputs the df to a csv file
-            df_stopwords = pd.DataFrame(stopWords, columns = ['stopwords'])
-            df_stopwords.to_csv('stopwords.csv', index = False) #writes the csv file
+            #df_stopwords = pd.DataFrame(stopWords, columns = ['stopwords']) #commented out 9/2/21
+            #df_stopwords.to_csv('stopwords.csv', index = False) #writes the csv file; commented out 9/2/21
 
             return stopWords
 
